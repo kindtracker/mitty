@@ -19,6 +19,7 @@ const mimi = {
 };
 
 const server = http.createServer((req, res) => {
+  console.log(`[mitty] ${req.socket.remoteAddress}: ${req.url}`);
   let fpath = path.join(__dirname, "web", req.url);
 
   if (req.url === "/") {
@@ -54,5 +55,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(8000, () => {
-  console.log("server listening: http://localhost:8000");
+  console.log("[mitty] server listening: http://localhost:8000");
 });
