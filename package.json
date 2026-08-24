@@ -1,0 +1,8 @@
+{
+  "license": "GPL-3.0",
+  "author": "kindtracker (https://github.com/kindtracker/)",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "node start.js"
+  }
+}
