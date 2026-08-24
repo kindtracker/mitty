@@ -4,14 +4,32 @@ let ctx = null;
 let state = {
   time: 0.6,
   width: 0,
-  height: 0
+  height: 0,
+  assets: {}
 };
+
+const all_textures = {
+  "player": "/assets/player.png",
+  "tileset": "/assets/tileset.png"
+}
 
 function resize() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   state.width = canvas.width;
   state.height = canvas.height;
+}
+
+function load_texture(path) {
+  return new Promise((resolve, reject) => {
+    const texture = new Image();
+
+    texture.onload = () => {resolve(texture);};
+    texture.onerror = () => {
+      reject(new Error(`failed to load texture: ${path}`));
+    };
+    texture.src = path;
+  });
 }
 
 function init() {
@@ -24,6 +42,12 @@ function init() {
 
   console.log("[mitty] loading: ctx");
   ctx = canvas.getContext("2d");
+
+  console.log("[mitty] loading: textures");
+  for (const [key, value] of Object.entries(all_textures)) {
+    console.log(`[mitty] loading: ${key}:${value}`);
+    state.assets[key] = load_texture(value);
+  }
 }
 
 function background() {
@@ -51,5 +75,6 @@ function render() {
 const engine = {};
 engine.init = init;
 engine.render = render;
+engine.load_texture = load_texture;
 window.engine = engine;
 window.state = state;
