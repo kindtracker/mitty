@@ -19,7 +19,11 @@ const mimi = {
 };
 
 const server = http.createServer((req, res) => {
-  console.log(`[mitty] ${req.socket.remoteAddress}: ${req.url}`);
+  let ip = req.socket.remoteAddress;
+  if (ip == "::1" || ip == "127.0.0.1") {
+    ip = "localhost";
+  }
+  console.log(`[mitty] ${ip}: ${req.url}`);
   let fpath = path.join(__dirname, "web", req.url);
 
   if (req.url === "/") {

@@ -1,8 +1,10 @@
-engine.init();
+(async function() {
+  await engine.init();
 
-async function loop() {
-  engine.render();
+  function loop() {
+    engine.render();
+    requestAnimationFrame(loop);
+  }
+
   requestAnimationFrame(loop);
-}
-
-requestAnimationFrame(loop);
+})();
