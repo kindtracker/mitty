@@ -8,8 +8,9 @@ let state = {
   assets: {},
   player: null,
   players: [],
-  mouse: [],
-  camera: [0, 0]
+  mouse: [0, 0],
+  camera: [0, 0],
+  scale: 4
 };
 
 const all_textures = {
@@ -21,7 +22,19 @@ function resize() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   state.width = canvas.width;
-  state.height = canvas.height;
+  state.height = canvas.height
+
+  if (!ctx) return;
+  ctx.msImageSmoothingEnabled = false;
+  ctx.mozImageSmoothingEnabled = false;
+  ctx.webkitImageSmoothingEnabled = false;
+  ctx.imageSmoothingEnabled = false;
+}
+
+function onmouse(e) {
+  if (e.clientX) {
+    state.mouse = [e.clientX, e.clientY];
+  }
 }
 
 function load_texture(path) {
@@ -43,9 +56,11 @@ async function init() {
   
   console.log("[mitty] adding events: canvas");
   window.addEventListener("resize", resize);
+  window.addEventListener("mousemove", onmouse);
 
   console.log("[mitty] loading: ctx");
   ctx = canvas.getContext("2d");
+  resize();
 
   console.log("[mitty] loading: state");
   state.player = player_new("Mitty", 1);
@@ -91,11 +106,25 @@ function player_render(player) {
   ctx.drawImage(state.assets.player, player.animation * 16, 0, 16, 18, player.pos[0], player.pos[1], 16, 18);
 }
 
+function camera() {
+  const half_width = state.width / 2;
+  const half_height = state.height / 2;
+  const player_px = state.player.pos[0] * 16;
+  const player_py = state.player.pos[1] * 16;
+  const mouse_offset_x = state.mouse[0] - half_width;
+  const mouse_offset_y = state.mouse[1] - half_height;
+  const mouse_fov = 0.25;
+  state.camera[0] = half_width - player_px - 8 - mouse_offset_x * mouse_fov;
+  state.camera[1] = half_height - player_py - 9 - mouse_offset_y * mouse_fov;
+}
+
 function render() {
   background();
 
+  camera();
   ctx.save();
   ctx.translate(state.camera[0], state.camera[1]);
+  ctx.scale(state.scale, state.scale);
   const all_players = [state.player, ...state.players];
   for (const player of all_players) {
     player_render(player);
