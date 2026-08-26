@@ -8,6 +8,7 @@ let state = {
   assets: {},
   player: null,
   players: [],
+  keys: {},
   mouse: [0, 0],
   camera: [0, 0],
   scale: 4
@@ -37,6 +38,14 @@ function onmouse(e) {
   }
 }
 
+function onkey(e) {
+  if (e.type == "keydown") {
+    state.keys[e.code] = true;
+  } else if (e.type == "keyup") {
+    state.keys[e.code] = false;
+  }
+}
+
 function load_texture(path) {
   return new Promise((resolve, reject) => {
     const texture = new Image();
@@ -57,6 +66,8 @@ async function init() {
   console.log("[mitty] adding events: canvas");
   window.addEventListener("resize", resize);
   window.addEventListener("mousemove", onmouse);
+  window.addEventListener("keydown", onkey);
+  window.addEventListener("keyup", onkey);
 
   console.log("[mitty] loading: ctx");
   ctx = canvas.getContext("2d");
@@ -76,6 +87,7 @@ function player_new(name, id) {
   return {
     name,
     id,
+    speed: 40,
     pid: Date.now().toString(16),
     pos: [0, 0],
     face: 1,
@@ -102,8 +114,17 @@ function background() {
 }
 
 function player_render(player) {
-  console.log(JSON.stringify(player));
-  ctx.drawImage(state.assets.player, player.animation * 16, 0, 16, 18, player.pos[0], player.pos[1], 16, 18);
+  const x = player.pos[0] * 16;
+  const y = player.pos[1] * 16;
+
+  ctx.save();
+  if (player.face == -1) {
+    ctx.translate(x + 16, y);
+    ctx.scale(-1, 1);
+    ctx.translate(-x, -y);
+  }
+  ctx.drawImage(state.assets.player, player.animation * 16, 0, 16, 18, x, y, 16, 18);
+  ctx.restore();
 }
 
 function camera() {
@@ -114,8 +135,8 @@ function camera() {
   const mouse_offset_x = state.mouse[0] - half_width;
   const mouse_offset_y = state.mouse[1] - half_height;
   const mouse_fov = 0.25;
-  state.camera[0] = half_width - player_px - 8 - mouse_offset_x * mouse_fov;
-  state.camera[1] = half_height - player_py - 9 - mouse_offset_y * mouse_fov;
+  state.camera[0] = half_width - player_px * state.scale - 8 - mouse_offset_x * mouse_fov;
+  state.camera[1] = half_height - player_py * state.scale - 9 - mouse_offset_y * mouse_fov;
 }
 
 function render() {
@@ -130,11 +151,29 @@ function render() {
     player_render(player);
   }
   ctx.restore();
+
+  return 1;
+}
+
+function keys(dt) {
+  if (state.keys["KeyA"] == true) {
+    state.player.face = -1;
+    state.player.pos[0] -= state.player.speed * dt;
+  } 
+  if (state.keys["KeyD"] == true) {
+    state.player.face = 1;
+    state.player.pos[0] += state.player.speed * dt;
+  }
+}
+
+function update(dt) {
+  keys(dt);
 }
 
 const engine = {};
 engine.init = init;
 engine.render = render;
+engine.update = update;
 engine.load_texture = load_texture;
 window.engine = engine;
 window.state = state;
