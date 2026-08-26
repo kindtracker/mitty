@@ -12,8 +12,10 @@
     }
     const dt = (now - last_time) / 1000;
     last_time = now;
-    engine.update(dt);
-    engine.render(dt);
+    if (dt < 1) {
+      engine.update(dt);
+      engine.render(dt);
+    }
     requestAnimationFrame(loop);
   }
 
