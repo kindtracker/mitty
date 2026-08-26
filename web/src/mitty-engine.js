@@ -233,8 +233,7 @@ function keys(dt) {
     state.player.vpos[1] = -12;
   }
   if (moving) {
-    state.player.animation += dt*6;
-    state.player.animation = state.player.animation % 7;
+    state.player.animation = (performance.now() / 150) % 7;
   } else {
     state.player.animation = 0;
   }
