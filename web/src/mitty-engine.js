@@ -20,6 +20,18 @@ const all_textures = {
   "tileset": "/assets/tileset.png"
 }
 
+function vec_add(a, b) {
+  return [a[0] + b[0], a[1] + b[1]];
+}
+
+function vec_mul(a, b) {
+  return [a[0] * b[0], a[1] * b[1]];
+}
+
+function vec_get(a) {
+  return {x: a[0], y: a[1]};
+}
+
 function resize() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -89,9 +101,11 @@ function player_new(name, id) {
   return {
     name,
     id,
-    speed: 7.5,
     pid: Date.now().toString(16),
+    speed: 7.5,
     pos: [0, 0],
+    vpos: [0, 0],
+    on_ground: true,
     face: 1,
     animation: 0
   }
@@ -152,6 +166,10 @@ function tiles_add(name, x, y) {
   state.tiles.set(`${x},${y}`, mtiles[name]);
 }
 
+function tiles_get(x, y) {
+  return state.tiles.get(`${x},${y}`);
+}
+
 function render() {
   background();
 
@@ -183,6 +201,9 @@ function keys(dt) {
     state.player.face = 1;
     state.player.pos[0] += state.player.speed * dt;
   }
+  if ((state.keys["Space"] || state.keys["KeyW"]) == true && state.player.on_ground) {
+    state.player.vpos[1] = -12;
+  }
   if (moving) {
     state.player.animation += dt*6;
     state.player.animation = state.player.animation % 7;
@@ -191,9 +212,70 @@ function keys(dt) {
   }
 }
 
+function player_collide(player, tile) {
+  const pos = player.pos;
+  const size = [1, 18 / 16];
+
+  return (
+    pos[0] < tile[0] + 1 &&
+    pos[0] + size[0] > tile[0] &&
+    pos[1] < tile[1] + 1 &&
+    pos[1] + size[1] > tile[1]
+  );
+}
+
+function player_update(dt, player) {
+  const gravity = 0.7;
+
+  player.vpos[1] += gravity;
+
+  let vpos = vec_mul(player.vpos, [dt, dt]);
+  player.pos = vec_add(player.pos, vpos);
+
+  player.on_ground = false;
+
+  const start_x = Math.floor(player.pos[0]) - 1;
+  const end_x = Math.floor(player.pos[0]) + 2;
+  const start_y = Math.floor(player.pos[1]) - 1;
+  const end_y = Math.floor(player.pos[1]) + 3;
+
+  for (let y = start_y; y <= end_y; y++) {
+    for (let x = start_x; x <= end_x; x++) {
+      const tile = tiles_get(x, y);
+
+      if (!tile) continue;
+      if (!player_collide(player, [x, y])) continue;
+
+      const overlap_left = (player.pos[0] + 1) - x;
+      const overlap_right = (x + 1) - player.pos[0];
+      const overlap_top = (player.pos[1] + 18 / 16) - y;
+      const overlap_bottom = (y + 1) - player.pos[1];
+
+      const min_overlap = Math.min(overlap_left, overlap_right, overlap_top, overlap_bottom);
+
+      if (min_overlap === overlap_bottom) {
+        player.pos[1] = y + 1;
+        player.vpos[1] = 0;
+      } else if (min_overlap === overlap_top) {
+        player.pos[1] = y - 18 / 16;
+        player.vpos[1] = 0;
+        player.on_ground = true;
+      } else if (min_overlap === overlap_right) {
+        player.pos[0] = x + 1;
+        player.vpos[0] = 0;
+      } else {
+        player.pos[0] = x - 1;
+        player.vpos[0] = 0;
+      }
+    }
+  }
+}
+
 function update(dt) {
   keys(dt);
+  player_update(dt, state.player);
 }
+
 
 const engine = {};
 engine.init = init;
