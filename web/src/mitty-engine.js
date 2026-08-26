@@ -158,7 +158,7 @@ function camera() {
 function tiles() {
   for (const [key, tile] of state.tiles) {
     const pos = key.split(",").map(Number);
-    ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, pos[0]*16, pos[1]*16, 16, 18); 
+    ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, pos[0]*16, pos[1]*16, 16, 16); 
   }  
 }
 
@@ -168,6 +168,19 @@ function tiles_add(name, x, y) {
 
 function tiles_get(x, y) {
   return state.tiles.get(`${x},${y}`);
+}
+
+function selec() {
+  const width = 0.5;
+  ctx.strokeStyle = "black";
+  ctx.lineWidth = width;
+
+  const pos = [
+    Math.floor((state.mouse[0] - state.camera[0]) / state.scale / 16) * 16,
+    Math.floor((state.mouse[1] - state.camera[1]) / state.scale / 16) * 16
+  ];
+
+  ctx.strokeRect(pos[0]+width/2, pos[1]+width/2, 16-width/2, 16-width/2);
 }
 
 function render() {
@@ -182,6 +195,7 @@ function render() {
   for (const player of all_players) {
     player_render(player);
   }
+  selec();
   ctx.restore();
 
   return 1;
@@ -275,7 +289,6 @@ function update(dt) {
   keys(dt);
   player_update(dt, state.player);
 }
-
 
 const engine = {};
 engine.init = init;
