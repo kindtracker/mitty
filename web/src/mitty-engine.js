@@ -48,7 +48,6 @@ function resize() {
 
 function onmouse(e) {
   e.preventDefault();
-  console.log(e.type)
   state.mouse = [e.clientX, e.clientY];
   if (e.type == "click") {
     tiles_add("mitty:grass", state.mouse_world);
@@ -187,7 +186,6 @@ function selec() {
 
   const pos = vec_mul(state.mouse_world, [16, 16]);
   const tile = tiles_get([pos[0]/16, pos[1]/16]);
-  console.log(tile);
   if (tile) {
     ctx.globalCompositeOperation = "difference";
     ctx.strokeStyle = "#ffffff";
