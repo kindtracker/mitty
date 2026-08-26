@@ -162,25 +162,33 @@ function tiles() {
   }  
 }
 
-function tiles_add(name, x, y) {
-  state.tiles.set(`${x},${y}`, mtiles[name]);
+function tiles_add(name, pos) {
+  state.tiles.set(`${pos[0]},${pos[1]}`, mtiles[name]);
 }
 
-function tiles_get(x, y) {
-  return state.tiles.get(`${x},${y}`);
+function tiles_get(pos) {
+  return state.tiles.get(`${pos[0]},${pos[1]}`);
 }
 
 function selec() {
-  const width = 0.5;
-  ctx.strokeStyle = "black";
-  ctx.lineWidth = width;
+  const width = 2;
 
   const pos = [
     Math.floor((state.mouse[0] - state.camera[0]) / state.scale / 16) * 16,
     Math.floor((state.mouse[1] - state.camera[1]) / state.scale / 16) * 16
   ];
 
-  ctx.strokeRect(pos[0]+width/2, pos[1]+width/2, 16-width/2, 16-width/2);
+  const tile = tiles_get([pos[0]/16, pos[1]/16]);
+  console.log(tile);
+  if (tile) {
+    ctx.globalCompositeOperation = "difference";
+    ctx.strokeStyle = "#ffffff";
+  } else {
+    ctx.strokeStyle = "#ffffff30";
+  }
+  ctx.lineWidth = width / state.scale;
+
+  ctx.strokeRect(pos[0]+0.75*(width/5), pos[1]+0.75*(width/5), 16-1.25*(width/5), 16-1.25*(width/5));
 }
 
 function render() {
@@ -255,7 +263,7 @@ function player_update(dt, player) {
 
   for (let y = start_y; y <= end_y; y++) {
     for (let x = start_x; x <= end_x; x++) {
-      const tile = tiles_get(x, y);
+      const tile = tiles_get([x, y]);
 
       if (!tile) continue;
       if (!player_collide(player, [x, y])) continue;
