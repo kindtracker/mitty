@@ -1,5 +1,5 @@
 window.mtiles = {
   "mitty:grass": {
-    pos: [6, 6]
+    pos: [9, 8]
   }
 }

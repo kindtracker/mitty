@@ -144,7 +144,7 @@ function camera() {
 function tiles() {
   for (const [key, tile] of state.tiles) {
     const pos = key.split(",").map(Number);
-    ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, pos[0], pos[1], 16, 18); 
+    ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, pos[0]*16, pos[1]*16, 16, 18); 
   }  
 }
 
