@@ -125,7 +125,7 @@ function player_render(player) {
     ctx.scale(-1, 1);
     ctx.translate(-x, -y);
   }
-  ctx.drawImage(state.assets.player, player.animation * 16, 0, 16, 18, x, y, 16, 18);
+  ctx.drawImage(state.assets.player, Math.floor(player.animation) * 16, 0, 16, 18, x, y, 16, 18);
   ctx.restore();
 }
 
@@ -144,7 +144,6 @@ function camera() {
 function tiles() {
   for (const [key, tile] of state.tiles) {
     const pos = key.split(",").map(Number);
-    console.log(key, tile)
     ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, pos[0], pos[1], 16, 18); 
   }  
 }
@@ -171,6 +170,11 @@ function render() {
 }
 
 function keys(dt) {
+  const moving = state.keys["KeyA"] || state.keys["KeyD"];
+  if (state.keys["KeyA"] && state.keys["KeyD"]) {
+    state.player.animation = 0;
+    return;
+  }
   if (state.keys["KeyA"] == true) {
     state.player.face = -1;
     state.player.pos[0] -= state.player.speed * dt;
@@ -178,6 +182,12 @@ function keys(dt) {
   if (state.keys["KeyD"] == true) {
     state.player.face = 1;
     state.player.pos[0] += state.player.speed * dt;
+  }
+  if (moving) {
+    state.player.animation += dt*6;
+    state.player.animation = state.player.animation % 7;
+  } else {
+    state.player.animation = 0;
   }
 }
 
