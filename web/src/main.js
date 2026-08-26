@@ -1,5 +1,8 @@
 (async function() {
+  const engine = window.engine;
   await engine.init();
+
+  engine.tiles_add("mitty:grass", 0, 2);
 
   let last_time = null;
   function loop() {

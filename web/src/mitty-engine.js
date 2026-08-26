@@ -2,7 +2,7 @@ let canvas = null;
 let ctx = null;
 
 let state = {
-  time: 0.5,
+  time: 1,
   width: 0,
   height: 0,
   assets: {},
@@ -11,7 +11,8 @@ let state = {
   keys: {},
   mouse: [0, 0],
   camera: [0, 0],
-  scale: 4
+  scale: 4,
+  tiles: null
 };
 
 const all_textures = {
@@ -75,6 +76,7 @@ async function init() {
 
   console.log("[mitty] loading: state");
   state.player = player_new("Mitty", 1);
+  state.tiles = new Map();
 
   console.log("[mitty] loading: textures");
   for (const [key, value] of Object.entries(all_textures)) {
@@ -87,7 +89,7 @@ function player_new(name, id) {
   return {
     name,
     id,
-    speed: 40,
+    speed: 7.5,
     pid: Date.now().toString(16),
     pos: [0, 0],
     face: 1,
@@ -139,6 +141,18 @@ function camera() {
   state.camera[1] = half_height - player_py * state.scale - 9 - mouse_offset_y * mouse_fov;
 }
 
+function tiles() {
+  for (const [key, tile] of state.tiles) {
+    const pos = key.split(",").map(Number);
+    console.log(key, tile)
+    ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, pos[0], pos[1], 16, 18); 
+  }  
+}
+
+function tiles_add(name, x, y) {
+  state.tiles.set(`${x},${y}`, mtiles[name]);
+}
+
 function render() {
   background();
 
@@ -146,6 +160,7 @@ function render() {
   ctx.save();
   ctx.translate(state.camera[0], state.camera[1]);
   ctx.scale(state.scale, state.scale);
+  tiles();
   const all_players = [state.player, ...state.players];
   for (const player of all_players) {
     player_render(player);
@@ -175,5 +190,6 @@ engine.init = init;
 engine.render = render;
 engine.update = update;
 engine.load_texture = load_texture;
+engine.tiles_add = tiles_add;
 window.engine = engine;
 window.state = state;
