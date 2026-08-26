@@ -10,6 +10,7 @@ let state = {
   players: [],
   keys: {},
   mouse: [0, 0],
+  mouse_world: [0, 0],
   camera: [0, 0],
   scale: 4,
   tiles: null
@@ -46,8 +47,13 @@ function resize() {
 }
 
 function onmouse(e) {
-  if (e.clientX) {
-    state.mouse = [e.clientX, e.clientY];
+  e.preventDefault();
+  console.log(e.type)
+  state.mouse = [e.clientX, e.clientY];
+  if (e.type == "click") {
+    tiles_add("mitty:grass", state.mouse_world);
+  } else if (e.type == "contextmenu") {
+    tiles_remove(state.mouse_world);
   }
 }
 
@@ -81,6 +87,8 @@ async function init() {
   window.addEventListener("mousemove", onmouse);
   window.addEventListener("keydown", onkey);
   window.addEventListener("keyup", onkey);
+  window.addEventListener("contextmenu", onmouse);
+  window.addEventListener("click", onmouse);
 
   console.log("[mitty] loading: ctx");
   ctx = canvas.getContext("2d");
@@ -166,6 +174,10 @@ function tiles_add(name, pos) {
   state.tiles.set(`${pos[0]},${pos[1]}`, mtiles[name]);
 }
 
+function tiles_remove(pos) {
+  state.tiles.delete(`${pos[0]},${pos[1]}`);
+}
+
 function tiles_get(pos) {
   return state.tiles.get(`${pos[0]},${pos[1]}`);
 }
@@ -173,11 +185,7 @@ function tiles_get(pos) {
 function selec() {
   const width = 2;
 
-  const pos = [
-    Math.floor((state.mouse[0] - state.camera[0]) / state.scale / 16) * 16,
-    Math.floor((state.mouse[1] - state.camera[1]) / state.scale / 16) * 16
-  ];
-
+  const pos = vec_mul(state.mouse_world, [16, 16]);
   const tile = tiles_get([pos[0]/16, pos[1]/16]);
   console.log(tile);
   if (tile) {
@@ -294,6 +302,11 @@ function player_update(dt, player) {
 }
 
 function update(dt) {
+  state.mouse_world = [
+    Math.floor((state.mouse[0] - state.camera[0]) / state.scale / 16),
+    Math.floor((state.mouse[1] - state.camera[1]) / state.scale / 16)
+  ];
+
   keys(dt);
   player_update(dt, state.player);
 }
