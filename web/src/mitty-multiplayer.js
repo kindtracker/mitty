@@ -24,7 +24,11 @@ async function init(url, session_token) {
   socket.onmessage = (data) => {
     handler(JSON.parse(data.data.toString()));
   };
-  
+ 
+  socket.onclose = (e) => {
+    console.log(`[mitty] socket is closed: reason: '${e.reason}' | code: '${e.code}'`);
+  };
+
   socket.send(JSON.stringify({
     type: "auth",
     session_token
