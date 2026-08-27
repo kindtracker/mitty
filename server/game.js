@@ -25,10 +25,10 @@ function player_new(name, id) {
 }
 
 server.on("connection", (socket) => {
-  const client = {socket, player: player_new("unknown", -1)};
+  const client = {socket, ip: socket._socket.remoteAddress, player: player_new("unknown", -1)};
   clients.push(client);
 
-  log("game", `[mitty] client connected`);
+  log("game", `[mitty] ${client.ip}: client connected`);
 
   socket.on("message", (data) => {
     const message = JSON.parse(data.toString());
@@ -54,7 +54,7 @@ server.on("connection", (socket) => {
   });
 
   socket.on("close", () => {
-    log("game", `[mitty:game] ${client.player.username}`);
+    log("game", `[mitty:game] ${client.ip}: ${client.player.username} disconnected`);
   });
 });
 

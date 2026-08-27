@@ -26,7 +26,7 @@ async function init(url, session_token) {
   };
  
   socket.onclose = (e) => {
-    console.log(`[mitty] socket is closed: reason: '${e.reason}' | code: '${e.code}'`);
+    console.log(`[mitty] socket is disconnected: reason: '${e.reason}' | code: '${e.code}'`);
   };
 
   socket.send(JSON.stringify({
