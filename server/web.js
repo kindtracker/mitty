@@ -55,7 +55,6 @@ const server = http.createServer((req, res) => {
     const ext = path.extname(fpath).slice(1); 
     const mime = mimi[ext] || "application/octet-stream"; 
     res.writeHead(200, { "Content-Type": mime });
-
     res.end(data);
   });
 });

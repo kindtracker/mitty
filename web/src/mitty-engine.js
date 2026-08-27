@@ -13,7 +13,8 @@ let state = {
   mouse_world: [0, 0],
   camera: [0, 0],
   scale: 4,
-  tiles: null
+  tiles: null,
+  multiplayer: null
 };
 
 const all_textures = {
@@ -76,7 +77,7 @@ function load_texture(path) {
   });
 }
 
-async function init() {
+async function init(player_name) {
   console.log("[mitty] loading: canvas");
   canvas = document.getElementById("mitty");
   resize();
@@ -94,7 +95,7 @@ async function init() {
   resize();
 
   console.log("[mitty] loading: state");
-  state.player = player_new("Mitty", 1);
+  state.player = player_new(player_name, 1);
   state.tiles = new Map();
 
   console.log("[mitty] loading: textures");
