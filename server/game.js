@@ -25,7 +25,7 @@ function player_new(name, id) {
 }
 
 server.on("connection", (socket) => {
-  const client = {player: player_new("unknown", -1)};
+  const client = {socket, player: player_new("unknown", -1)};
   clients.push(client);
 
   log("game", `[mitty] client connected`);
@@ -57,5 +57,25 @@ server.on("connection", (socket) => {
     log("game", `[mitty:game] ${client.player.username}`);
   });
 });
+
+setInterval(() => {
+  let players = [];
+  for (let i = 0; i < clients.length; i++) {
+    const client = clients[i];
+    if (client.player.id == -1) continue;
+    players.push(client.player);
+  }
+
+  const update_message = JSON.stringify({
+    type: "update",
+    players 
+  });
+
+  for (const client of clients) {
+    if (client.socket.readyState !== WebSocket.OPEN) continue;
+
+    client.socket.send(update_message);
+  }
+}, 1000 / 24);
 
 log("game", "[mitty:game] server listening: ws://localhost:8001");
