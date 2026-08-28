@@ -5,7 +5,19 @@ function handler(message) {
     state.player.name = message.name;
     state.player.id = message.id;
     state.player.pid = message.pid;
+  } else if (message.type == "update") {
+    for (let player of message.players) {
+      console.log(player)
+      state.players[player.id] = player;
+    }
   }
+}
+
+function update() {
+  socket.send(JSON.stringify({
+    type: "update",
+    player: state.player
+  }));
 }
 
 async function init(url, session_token) {
@@ -32,13 +44,6 @@ async function init(url, session_token) {
   socket.send(JSON.stringify({
     type: "auth",
     session_token
-  }));
-}
-
-function update() {
-  socket.send(JSON.stringify({
-    type: "update",
-    player: state.player
   }));
 }
 

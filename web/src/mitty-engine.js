@@ -7,7 +7,7 @@ let state = {
   height: 0,
   assets: {},
   player: null,
-  players: [],
+  players: {},
   keys: {},
   mouse: [0, 0],
   mouse_world: [0, 0],
@@ -206,7 +206,7 @@ function render() {
   ctx.translate(state.camera[0], state.camera[1]);
   ctx.scale(state.scale, state.scale);
   tiles();
-  const all_players = [state.player, ...state.players];
+  const all_players = [state.player, ...Object.values(state.players)];
   for (const player of all_players) {
     player_render(player);
   }
@@ -250,6 +250,10 @@ function player_collide(player, tile) {
     pos[1] < tile[1] + 1 &&
     pos[1] + size[1] > tile[1]
   );
+}
+
+function player_add(player) {
+  state.players[player.id] = player;
 }
 
 function player_update(dt, player) {
@@ -315,5 +319,6 @@ engine.render = render;
 engine.update = update;
 engine.load_texture = load_texture;
 engine.tiles_add = tiles_add;
+engine.player_add = player_add;
 window.engine = engine;
 window.state = state;
