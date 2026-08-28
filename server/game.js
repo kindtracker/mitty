@@ -54,7 +54,23 @@ server.on("connection", (socket) => {
   });
 
   socket.on("close", () => {
-    log("game", `[mitty:game] ${client.ip}: ${client.player.username} disconnected`);
+    if (client.player.id != -1) {
+      const leave_message = JSON.stringify({
+        type: "leave",
+        id: client.player.id
+      });
+
+      const index = clients.indexOf(client);
+      if (index !== -1) {
+        clients.splice(index, 1);
+      }
+
+      for (const oclient of clients) {
+        if (oclient.socket.readyState !== WebSocket.OPEN) continue;
+        oclient.socket.send(leave_message);
+      }
+    }
+    log("game", client.player.id == -1 ? `[mitty:game] ${client.ip} disconnected` :  `[mitty:game] ${client.ip}: ${client.player.username} disconnected`);
   });
 });
 
@@ -73,7 +89,6 @@ setInterval(() => {
 
   for (const client of clients) {
     if (client.socket.readyState !== WebSocket.OPEN) continue;
-
     client.socket.send(update_message);
   }
 }, 1000 / 24);

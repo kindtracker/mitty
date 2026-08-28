@@ -5,9 +5,11 @@ function handler(message) {
     state.player.name = message.name;
     state.player.id = message.id;
     state.player.pid = message.pid;
+  } else if (message.type == "leave") {
+    console.log(message)
+    delete state.players[message.id];
   } else if (message.type == "update") {
     for (let player of message.players) {
-      console.log(player)
       state.players[player.id] = player;
     }
   }
