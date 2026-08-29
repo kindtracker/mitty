@@ -99,7 +99,7 @@ server.on("connection", (socket) => {
 let s_tick = 0;
 setInterval(() => {
   s_tick++;
-  if (s_tick == 1) {
+  if (s_tick == 8) {
     const time = ((Date.now() - uptime_start) / (64 * 1000)) % Math.PI * 2
     const update_message = JSON.stringify({
       type: "time",
