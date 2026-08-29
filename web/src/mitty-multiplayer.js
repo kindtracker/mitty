@@ -5,6 +5,7 @@ function handler(message) {
     state.player.name = message.name;
     state.player.id = message.id;
     state.player.pid = message.pid;
+    state.world = new Map(message.world.map(([pos, name]) => [pos, mtiles[name]]));
   } else if (message.type == "leave") {
     console.log(message)
     delete state.players[message.id];

@@ -47,6 +47,7 @@ server.on("connection", (socket) => {
         name: message.session_token,
         id: client.player.id,
         pid: client.player.pid,
+        world: [...world]
       }));
     } else if (type == "update") {
       if ("player" in message) {
@@ -56,9 +57,9 @@ server.on("connection", (socket) => {
         if (!("pos" in message.tile)) return;
         if (message.tile.mode == "add") {
           if (!("name" in message.tile)) return;
-          world.set(message.tile.pos, message.tile.name);
+          world.set(`${message.tile.pos[0]},${message.tile.pos[1]}`, message.tile.name);
         } else if (message.tile.mode == "remove") {
-          world.delete(message.tile.pos);
+          world.delete(`${message.tile.pos[0]},${message.tile.pos[1]}`);
         }
         
         const update_message = JSON.stringify(message);
