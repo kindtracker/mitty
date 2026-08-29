@@ -13,7 +13,7 @@ let state = {
   mouse_world: [0, 0],
   camera: [0, 0],
   scale: 4,
-  tiles: null,
+  world: null,
   multiplayer: null
 };
 
@@ -96,7 +96,7 @@ async function init(player_name) {
 
   console.log("[mitty] loading: state");
   state.player = player_new(player_name, 1);
-  state.tiles = new Map();
+  state.world = new Map();
 
   console.log("[mitty] loading: textures");
   for (const [key, value] of Object.entries(all_textures)) {
@@ -164,22 +164,28 @@ function camera() {
 }
 
 function tiles() {
-  for (const [key, tile] of state.tiles) {
+  for (const [key, tile] of state.world) {
     const pos = key.split(",").map(Number);
     ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, pos[0]*16, pos[1]*16, 16, 16); 
   }  
 }
 
-function tiles_add(name, pos) {
-  state.tiles.set(`${pos[0]},${pos[1]}`, mtiles[name]);
+function tiles_add(name, pos, call_multiplayer = true) {
+  state.world.set(`${pos[0]},${pos[1]}`, mtiles[name]);
+  if (call_multiplayer) {
+    multiplayer.tiles_add_callback(name, pos);
+  }
 }
 
-function tiles_remove(pos) {
-  state.tiles.delete(`${pos[0]},${pos[1]}`);
+function tiles_remove(pos, call_multiplayer = true) {
+  state.world.delete(`${pos[0]},${pos[1]}`);
+  if (call_multiplayer) {
+    multiplayer.tiles_remove_callback(pos);
+  }
 }
 
 function tiles_get(pos) {
-  return state.tiles.get(`${pos[0]},${pos[1]}`);
+  return state.world.get(`${pos[0]},${pos[1]}`);
 }
 
 function selec() {
@@ -319,6 +325,7 @@ engine.render = render;
 engine.update = update;
 engine.load_texture = load_texture;
 engine.tiles_add = tiles_add;
+engine.tiles_remove = tiles_remove;
 engine.player_add = player_add;
 window.engine = engine;
 window.state = state;

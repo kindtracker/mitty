@@ -6,6 +6,7 @@ const server = new WebSocket.Server({
   port: 8001
 });
 
+const world = new Map();
 const clients = [];
 
 let current_id = 0;
@@ -48,8 +49,25 @@ server.on("connection", (socket) => {
         pid: client.player.pid,
       }));
     } else if (type == "update") {
-      if (!("player" in message)) return;
-      client.player = message.player;
+      if ("player" in message) {
+        client.player = message.player;
+      } else if ("tile" in message) {
+        if (!("mode" in message.tile)) return;
+        if (!("pos" in message.tile)) return;
+        if (message.tile.mode == "add") {
+          if (!("name" in message.tile)) return;
+          world.set(message.tile.pos, message.tile.name);
+        } else if (message.tile.mode == "remove") {
+          world.delete(message.tile.pos);
+        }
+        
+        const update_message = JSON.stringify(message);
+        for (const oclient of clients) {
+          if (oclient.socket.readyState !== WebSocket.OPEN) continue;
+          if (oclient.player.id == -1) continue;
+          oclient.socket.send(update_message);
+        }
+      }
     }
   });
 

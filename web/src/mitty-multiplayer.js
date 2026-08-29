@@ -9,13 +9,44 @@ function handler(message) {
     console.log(message)
     delete state.players[message.id];
   } else if (message.type == "update") {
-    for (let player of message.players) {
-      if (player.id == state.player.id) {
-        continue;
+    if ("players" in message) {
+      for (let player of message.players) {
+        if (player.id == state.player.id) {
+          continue;
+          }
+        state.players[player.id] = player;
       }
-      state.players[player.id] = player;
+    } else if ("tile" in message) {
+      const pos = message.tile.pos;
+      console.log(pos);
+      if (message.tile.mode == "add") {
+        engine.tiles_add(message.tile.name, pos, false);
+      } else if (message.tile.mode == "remove") {
+        engine.tiles_remove(pos, false);
+      }
     }
   }
+}
+
+function tiles_add_callback(name, pos) {
+  socket.send(JSON.stringify({
+    type: "update",
+    tile: {
+      mode: "add",
+      name,
+      pos
+    }
+  }));
+}
+
+function tiles_remove_callback(pos) {
+  socket.send(JSON.stringify({
+    type: "update",
+    tile: {
+      mode: "remove",
+      pos
+    }
+  }));
 }
 
 function update() {
@@ -55,4 +86,6 @@ async function init(url, session_token) {
 const multiplayer = {};
 multiplayer.init = init;
 multiplayer.update = update;
+multiplayer.tiles_add_callback = tiles_add_callback;
+multiplayer.tiles_remove_callback = tiles_remove_callback;
 window.multiplayer = multiplayer;
