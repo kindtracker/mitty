@@ -51,9 +51,11 @@ function onmouse(e) {
   e.preventDefault();
   state.mouse = [e.clientX, e.clientY];
   if (e.type == "click") {
-    tiles_add("mitty:grass", state.mouse_world);
-  } else if (e.type == "contextmenu") {
-    tiles_remove(state.mouse_world);
+    if (tiles_get(state.mouse_world)) {
+      tiles_remove(state.mouse_world);
+    } else {
+      tiles_add("mitty:grass", state.mouse_world);
+    }
   }
 }
 
