@@ -10,6 +10,9 @@ function handler(message) {
     delete state.players[message.id];
   } else if (message.type == "update") {
     for (let player of message.players) {
+      if (player.id == state.player.id) {
+        continue;
+      }
       state.players[player.id] = player;
     }
   }
