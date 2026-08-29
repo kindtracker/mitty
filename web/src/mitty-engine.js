@@ -111,6 +111,7 @@ function player_new(name, id) {
     id,
     pid: Date.now().toString(16),
     speed: 7.5,
+    jump_power: 12,
     pos: [0, 0],
     vpos: [0, 0],
     on_ground: true,
@@ -237,7 +238,7 @@ function keys(dt) {
     state.player.pos[0] += state.player.speed * dt;
   }
   if ((state.keys["Space"] || state.keys["KeyW"]) == true && state.player.on_ground) {
-    state.player.vpos[1] = -12;
+    state.player.vpos[1] = -state.player.jump_power;
   }
   if (moving) {
     state.player.animation = (performance.now() / 150) % 7;
