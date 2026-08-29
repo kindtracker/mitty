@@ -67,6 +67,7 @@ server.on("connection", (socket) => {
 
       for (const oclient of clients) {
         if (oclient.socket.readyState !== WebSocket.OPEN) continue;
+        if (oclient.player.id == -1) continue;
         oclient.socket.send(leave_message);
       }
     }
@@ -89,6 +90,7 @@ setInterval(() => {
 
   for (const client of clients) {
     if (client.socket.readyState !== WebSocket.OPEN) continue;
+    if (client.player.id == -1) continue;
     client.socket.send(update_message);
   }
 }, 1000 / 24);
