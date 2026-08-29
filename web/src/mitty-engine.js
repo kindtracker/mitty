@@ -316,7 +316,12 @@ function update(dt) {
   ];
 
   keys(dt);
-  player_update(dt, state.player);
+
+  const all_players = [state.player, ...Object.values(state.players)];
+  for (const player of all_players) {
+    console.log(player.vpos)
+    player_update(dt, player);
+  }
 }
 
 const engine = {};

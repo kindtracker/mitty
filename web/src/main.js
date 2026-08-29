@@ -22,7 +22,7 @@
     const dt = (now - last_time) / 1000;
     const ml_dt = (now - ml_last_time) / 1000;
     last_time = now;
-    if (ml_dt > 1/24) {
+    if (ml_dt > 1/32) {
       multiplayer.update();
       ml_last_time = now;
     }

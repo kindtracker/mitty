@@ -111,6 +111,6 @@ setInterval(() => {
     if (client.player.id == -1) continue;
     client.socket.send(update_message);
   }
-}, 1000 / 24);
+}, 1000 / 32);
 
 log("game", "server listening: ws://localhost:8001");
