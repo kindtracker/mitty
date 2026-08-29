@@ -160,7 +160,6 @@ function camera() {
 function tiles() {
   for (const [key, tile] of state.world) {
     const pos = key.split(",").map(Number);
-    console.log(pos, tile);
     ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, pos[0]*16, pos[1]*16, 16, 16); 
   }  
 }

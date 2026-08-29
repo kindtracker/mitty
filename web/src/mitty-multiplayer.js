@@ -7,7 +7,6 @@ function handler(message) {
     state.player.pid = message.pid;
     state.world = new Map(message.world.map(([pos, name]) => [pos, mtiles[name]]));
   } else if (message.type == "leave") {
-    console.log(message)
     delete state.players[message.id];
   } else if (message.type == "update") {
     if ("players" in message) {
@@ -19,7 +18,6 @@ function handler(message) {
       }
     } else if ("tile" in message) {
       const pos = message.tile.pos;
-      console.log(pos);
       if (message.tile.mode == "add") {
         engine.tiles_add(message.tile.name, pos, false);
       } else if (message.tile.mode == "remove") {
