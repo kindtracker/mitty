@@ -25,7 +25,7 @@ const server = http.createServer((req, res) => {
   if (ip == "::1" || ip == "127.0.0.1") {
     ip = "localhost";
   }
-  log("web", `[mitty:web] ${ip}: ${req.url}`);
+  log("web", `${ip}: ${req.url}`);
   let fpath = path.join(__dirname, "..", "web", req.url);
 
   if (req.url === "/") {
@@ -60,5 +60,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(8000, () => {
-  log("web", "[mitty:web] server listening: http://localhost:8000");
+  log("web", "server listening: http://localhost:8000");
 });

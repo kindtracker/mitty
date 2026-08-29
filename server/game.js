@@ -28,7 +28,7 @@ server.on("connection", (socket) => {
   const client = {socket, ip: socket._socket.remoteAddress, player: player_new("unknown", -1)};
   clients.push(client);
 
-  log("game", `[mitty] ${client.ip}: client connected`);
+  log("game", `${client.ip}: client connected`);
 
   socket.on("message", (data) => {
     const message = JSON.parse(data.toString());
@@ -71,7 +71,7 @@ server.on("connection", (socket) => {
         oclient.socket.send(leave_message);
       }
     }
-    log("game", client.player.id == -1 ? `[mitty:game] ${client.ip} disconnected` :  `[mitty:game] ${client.ip}: ${client.player.username} disconnected`);
+    log("game", client.player.id == -1 ? `${client.ip} disconnected` :  `[mitty:game] ${client.ip}: ${client.player.username} disconnected`);
   });
 });
 
@@ -95,4 +95,4 @@ setInterval(() => {
   }
 }, 1000 / 24);
 
-log("game", "[mitty:game] server listening: ws://localhost:8001");
+log("game", "server listening: ws://localhost:8001");
