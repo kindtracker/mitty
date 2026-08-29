@@ -11,6 +11,8 @@ const clients = [];
 
 let current_id = 0;
 
+let uptime_start = Date.now();
+
 function player_new(name, id) {
   return {
     name,
@@ -94,7 +96,23 @@ server.on("connection", (socket) => {
   });
 });
 
+let s_tick = 0;
 setInterval(() => {
+  s_tick++;
+  if (s_tick == 1) {
+    const time = ((Date.now() - uptime_start) / (64 * 1000)) % Math.PI * 2
+    const update_message = JSON.stringify({
+      type: "time",
+      time
+    });
+    for (const client of clients) {
+      if (client.socket.readyState !== WebSocket.OPEN) continue;
+      if (client.player.id == -1) continue;
+      client.socket.send(update_message);
+    }
+    s_tick = 0;
+  }
+
   let players = [];
   for (let i = 0; i < clients.length; i++) {
     const client = clients[i];

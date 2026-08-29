@@ -8,6 +8,8 @@ function handler(message) {
     state.world = new Map(message.world.map(([pos, name]) => [pos, mtiles[name]]));
   } else if (message.type == "leave") {
     delete state.players[message.id];
+  } else if (message.type == "time") {
+    state.time = message.time;
   } else if (message.type == "update") {
     if ("players" in message) {
       for (let player of message.players) {
