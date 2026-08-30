@@ -200,6 +200,7 @@ function selec() {
 
   const pos = vec_mul(state.mouse_world, [16, 16]);
   const tile = tiles_get([pos[0]/16, pos[1]/16]);
+  ctx.save();
   if (tile) {
     ctx.globalCompositeOperation = "difference";
     ctx.strokeStyle = "#ffffff";
@@ -207,8 +208,15 @@ function selec() {
     ctx.strokeStyle = "#ffffff30";
   }
   ctx.lineWidth = width / state.scale;
-
   ctx.strokeRect(pos[0]+0.75*(width/5), pos[1]+0.75*(width/5), 16-1.25*(width/5), 16-1.25*(width/5));
+  ctx.restore();
+    
+  const breaking = state.breaking ? Math.floor(state.breaking+1) : 1;
+  if (state.breaking_pos) {
+    const tile = mtiles[`mitty:breaking:${breaking}`];
+    const pos = state.mouse_world;
+    ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, pos[0]*16, pos[1]*16, 16, 16); 
+  }
 }
 
 function render() {
@@ -325,6 +333,12 @@ function mouse_buttons(dt) {
   if (!state.mouse_buttons[0]) {
     state.breaking = 0;
     state.breaking_pos = null;
+  }
+
+  if (Math.floor(state.breaking) >= 7) {
+    state.breaking = 0;
+    state.breaking_pos = null;
+    tiles_remove(state.mouse_world);
   }
 }
 
