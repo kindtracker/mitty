@@ -27,6 +27,15 @@ function player_new(name, id) {
   }
 }
 
+function broadcast(update_message) {
+  const message = JSON.stringify(update_message);
+  for (const client of clients) {
+    if (client.socket.readyState !== WebSocket.OPEN) continue;
+    if (client.player.id == -1) continue;
+    client.socket.send(message);
+  }
+}
+
 server.on("connection", (socket) => {
   const client = {socket, ip: socket._socket.remoteAddress, player: player_new("unknown", -1)};
   clients.push(client);
@@ -76,21 +85,17 @@ server.on("connection", (socket) => {
 
   socket.on("close", () => {
     if (client.player.id != -1) {
-      const leave_message = JSON.stringify({
-        type: "leave",
-        id: client.player.id
-      });
+
 
       const index = clients.indexOf(client);
       if (index !== -1) {
         clients.splice(index, 1);
       }
 
-      for (const oclient of clients) {
-        if (oclient.socket.readyState !== WebSocket.OPEN) continue;
-        if (oclient.player.id == -1) continue;
-        oclient.socket.send(leave_message);
-      }
+      broadcast({
+        type: "leave",
+        id: client.player.id
+      });
     }
     log("game", client.player.id == -1 ? `${client.ip} disconnected` :  `[mitty:game] ${client.ip}: ${client.player.username} disconnected`);
   });
@@ -120,16 +125,7 @@ setInterval(() => {
     players.push(client.player);
   }
 
-  const update_message = JSON.stringify({
-    type: "update",
-    players 
-  });
-
-  for (const client of clients) {
-    if (client.socket.readyState !== WebSocket.OPEN) continue;
-    if (client.player.id == -1) continue;
-    client.socket.send(update_message);
-  }
+  broadcast({ type: "update", players });
 }, 1000 / 32);
 
 log("game", "server listening: ws://localhost:8001");
