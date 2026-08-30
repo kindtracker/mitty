@@ -22,7 +22,7 @@ let state = {
 
 const all_textures = {
   "player": "/assets/player.png",
-  "tileset": "/assets/tileset.png"
+  "tileset": "https://minecraft.wiki/images/15w41a_textures-atlas.png?0ff46"
 }
 
 function vec_add(a, b) {

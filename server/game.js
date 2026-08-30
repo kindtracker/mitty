@@ -85,8 +85,6 @@ server.on("connection", (socket) => {
 
   socket.on("close", () => {
     if (client.player.id != -1) {
-
-
       const index = clients.indexOf(client);
       if (index !== -1) {
         clients.splice(index, 1);

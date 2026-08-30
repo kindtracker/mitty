@@ -1,6 +1,6 @@
 window.mtiles = {
   "mitty:grass": {
-    pos: [9, 8],
+    pos: [3, 11],
     hardness: 0.2
   },
   "mitty:breaking:1": {
