@@ -9,9 +9,12 @@ let state = {
   player: null,
   players: {},
   keys: {},
+  mouse_buttons: {},
   mouse: [0, 0],
   mouse_world: [0, 0],
   camera: [0, 0],
+  breaking: 0,
+  breaking_pos: null,
   scale: 4,
   world: null,
   multiplayer: null
@@ -50,12 +53,18 @@ function resize() {
 function onmouse(e) {
   e.preventDefault();
   state.mouse = [e.clientX, e.clientY];
-  if (e.type == "click") {
+  if (e.type == "mousedown" || e.type == "mouseup") {
+    state.mouse_buttons[e.button] = e.type == "mousedown" ? true : false;
+  }
+  if (e.type == "mousedown") {
     if (tiles_get(state.mouse_world)) {
-      tiles_remove(state.mouse_world);
+      state.breaking_pos = state.mouse_world;
     } else {
       tiles_add("mitty:grass", state.mouse_world);
+      state.breaking_pos = null;
     }
+  } else if (e.type == "contextmenu") {
+    tiles_remove(state.mouse_world);
   }
 }
 
@@ -91,6 +100,8 @@ async function init(player_name) {
   window.addEventListener("keyup", onkey);
   window.addEventListener("contextmenu", onmouse);
   window.addEventListener("click", onmouse);
+  window.addEventListener("mousedown", onmouse);
+  window.addEventListener("mouseup", onmouse);
 
   console.log("[mitty] loading: ctx");
   ctx = canvas.getContext("2d");
@@ -305,6 +316,18 @@ function player_update(dt, player) {
   }
 }
 
+function mouse_buttons(dt) {
+  if (state.mouse_buttons[0] && state.breaking_pos && state.mouse_world?.every((v, i) => v === state.breaking_pos?.[i])) {
+    const pos = state.breaking_pos;
+    state.breaking += dt / tiles_get(state.breaking_pos).hardness;
+    console.log(state.breaking)
+  } 
+  if (!state.mouse_buttons[0]) {
+    state.breaking = 0;
+    state.breaking_pos = null;
+  }
+}
+
 function update(dt) {
   state.mouse_world = [
     Math.floor((state.mouse[0] - state.camera[0]) / state.scale / 16),
@@ -317,6 +340,8 @@ function update(dt) {
   for (const player of all_players) {
     player_update(dt, player);
   }
+
+  mouse_buttons(dt);
 }
 
 const engine = {};
