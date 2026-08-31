@@ -58,6 +58,7 @@ server.on("connection", (socket) => {
         name: message.session_token,
         id: client.player.id,
         pid: client.player.pid,
+        uptime_start,
         world: [...world]
       }));
     } else if (type == "update") {
@@ -103,16 +104,6 @@ let s_tick = 0;
 setInterval(() => {
   s_tick++;
   if (s_tick == 8) {
-    const time = ((Date.now() - uptime_start) / (64 * 1000)) % Math.PI * 2
-    const update_message = JSON.stringify({
-      type: "time",
-      time
-    });
-    for (const client of clients) {
-      if (client.socket.readyState !== WebSocket.OPEN) continue;
-      if (client.player.id == -1) continue;
-      client.socket.send(update_message);
-    }
     s_tick = 0;
   }
 

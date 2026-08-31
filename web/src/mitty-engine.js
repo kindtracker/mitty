@@ -17,7 +17,8 @@ let state = {
   breaking_pos: null,
   scale: 4,
   world: null,
-  multiplayer: null
+  multiplayer: null,
+  server_uptime_start: Date.now()
 };
 
 const all_textures = {
@@ -347,6 +348,8 @@ function update(dt) {
     Math.floor((state.mouse[0] - state.camera[0]) / state.scale / 16),
     Math.floor((state.mouse[1] - state.camera[1]) / state.scale / 16)
   ];
+
+  state.time = ((Date.now() - state.server_uptime_start) / (64 * 1000)) % Math.PI * 2
 
   keys(dt);
 
