@@ -96,7 +96,7 @@ server.on("connection", (socket) => {
         id: client.player.id
       });
     }
-    log("game", client.player.id == -1 ? `${client.ip} disconnected` :  `[mitty:game] ${client.ip}: ${client.player.username} disconnected`);
+    log("game", client.player.id == -1 ? `${client.ip} disconnected` :  `${client.ip}: ${client.player.username} disconnected`);
   });
 });
 
