@@ -136,13 +136,30 @@ function player_new(name, id) {
 
 function background() {
   const cycle = (Math.sin(state.time) + 1) / 2;
-  const top_light = 10 + 60 * cycle;
-  const bottom_light = 5 + 50 * cycle;
+  const smooth = cycle * cycle * (3 - 2 * cycle);
+
+  const twilight = 1 - Math.abs(cycle - 0.5) * 2;
+  const night = 1 - smooth;
+
+  const top_light = 8 + 52 * smooth;
+  const bottom_light = 5 + 45 * smooth;
+
   const gradient = ctx.createLinearGradient(0, 0, 0, state.height);
-  gradient.addColorStop(0, `hsl(210, 100%, ${top_light / 80 * 100}%)`);
-  gradient.addColorStop(1, `hsl(210, 100%, ${bottom_light / 80 * 100}%)`);
+  gradient.addColorStop(0, `hsl(220, ${45 + smooth * 40}%, ${top_light}%)`);
+  gradient.addColorStop(0.45, `hsl(210, ${55 + smooth * 30}%, ${(top_light + bottom_light) / 2}%)`);
+  gradient.addColorStop(1, `hsl(200, ${50 + smooth * 30}%, ${bottom_light}%)`);
+
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, state.width, state.height);
+
+  if (twilight > 0.01) {
+    const glow = ctx.createLinearGradient(0, state.height * 0.45, 0, state.height);
+    glow.addColorStop(0, "rgba(255, 120, 50, 0)");
+    glow.addColorStop(0.7, `rgba(255, 120, 50, ${twilight * 0.15})`);
+    glow.addColorStop(1, `rgba(255, 180, 80, ${twilight * 0.3})`);
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, state.width, state.height);
+  }
 }
 
 function player_render(player) {
