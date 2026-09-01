@@ -326,15 +326,14 @@ function player_update(dt, player) {
 }
 
 function mouse_buttons(dt) {
-  if (state.mouse_buttons[0] && state.breaking_pos && state.mouse_world?.every((v, i) => v === state.breaking_pos?.[i])) {
-    const pos = state.breaking_pos;
-    state.breaking += dt / tiles_get(state.breaking_pos).hardness;
-    console.log(state.breaking)
-  } 
-  if (!state.mouse_buttons[0]) {
+  if (!state.mouse_buttons[0] || state.breaking_pos == null || !state.mouse_world?.every((v, i) => v == state.breaking_pos?.[i])) {
     state.breaking = 0;
     state.breaking_pos = null;
+    return;
   }
+
+  const pos = state.breaking_pos;
+  state.breaking += dt / tiles_get(pos).hardness;
 
   if (Math.floor(state.breaking) >= 7) {
     state.breaking = 0;
