@@ -152,6 +152,19 @@ function background() {
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, state.width, state.height);
 
+  if (night > 0) {
+    ctx.fillStyle = `rgba(255, 255, 255, ${night * 0.8})`;
+    for (let i = 0; i < 160; i++) {
+      const x = (Math.sin(Date.now()/512000+i/1)+1)/2 * state.width;
+      const y = ((i + state.time*2) * 71.3) % (state.height * 0.8);
+      const size = 0.5 + ((i * 17) % 10) / 10;
+
+      ctx.globalAlpha = night * (0.4 + Math.sin(state.time*8 + i * 0.3));
+      ctx.fillRect(x, y, size, size);
+    }
+    ctx.globalAlpha = 1;
+  }
+
   if (twilight > 0.01) {
     const glow = ctx.createLinearGradient(0, state.height * 0.45, 0, state.height);
     glow.addColorStop(0, "rgba(255, 120, 50, 0)");
@@ -365,7 +378,7 @@ function update(dt) {
     Math.floor((state.mouse[1] - state.camera[1]) / state.scale / 16)
   ];
 
-  state.time = ((Date.now() - state.server_uptime_start) / (64 * 1000)) % Math.PI * 2
+  state.time = ((Date.now() - state.server_uptime_start) / (64 * 1000)) % Math.PI * 2;
 
   keys(dt);
 
