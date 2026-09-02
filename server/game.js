@@ -162,10 +162,9 @@ function wait(ms) {
 
 async function main() {
   log("game", "server listening: ws://localhost:8001");
-  for (let y = 0; y < 64; y += 8) {
+  for (let y = 0; y < 16; y += 8) {
     for (let x = 0; x < 64; x += 8) {
       chunk_generate(x, y+2, 8, 8);
-      await wait(300);
     }
   }
 };

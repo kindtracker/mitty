@@ -124,8 +124,8 @@ function player_new(name, id) {
     name,
     id,
     pid: Date.now().toString(16),
-    speed: 7.5*3,
-    jump_power: 12,
+    speedwalk: 7.5,
+    jump_power: 13,
     pos: [0, 0],
     vpos: [0, 0],
     on_ground: true,
@@ -211,18 +211,7 @@ function tiles() {
     for (let x = start_x; x < end_x; x++) {
       const tile = state.world.get(`${x},${y}`);
       if (!tile) continue;
-
-      ctx.drawImage(
-        state.assets.tileset,
-        tile.pos[0] * 16,
-        tile.pos[1] * 16,
-        16,
-        16,
-        x * 16,
-        y * 16,
-        16,
-        16
-      );
+      ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, x*16, y*16, 16, 16);
     }
   }
 }
@@ -296,11 +285,11 @@ function keys(dt) {
   }
   if (state.keys["KeyA"] == true) {
     state.player.face = -1;
-    state.player.pos[0] -= state.player.speed * dt;
+    state.player.pos[0] -= state.player.speedwalk * dt;
   } 
   if (state.keys["KeyD"] == true) {
     state.player.face = 1;
-    state.player.pos[0] += state.player.speed * dt;
+    state.player.pos[0] += state.player.speedwalk * dt;
   }
   if ((state.keys["Space"] || state.keys["KeyW"]) == true && state.player.on_ground) {
     state.player.vpos[1] = -state.player.jump_power;
