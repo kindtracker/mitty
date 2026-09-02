@@ -227,7 +227,6 @@ function chunks_request() {
   for (let y = start_y; y < end_y; y += 8) {
     for (let x = start_x; x < end_x; x += 8) {
       const has_chunk = state.chunks.get(`${x},${y}`);
-      console.log(has_chunk)
       if (has_chunk) continue;
       multiplayer.chunk_request(x, y);
     }
