@@ -124,7 +124,7 @@ function player_new(name, id) {
     name,
     id,
     pid: Date.now().toString(16),
-    speed: 7.5,
+    speed: 7.5*3,
     jump_power: 12,
     pos: [0, 0],
     vpos: [0, 0],
@@ -209,6 +209,7 @@ function tiles() {
 }
 
 function tiles_add(name, pos, call_multiplayer = true) {
+  state.world.delete(`${pos[0]},${pos[1]}`);
   state.world.set(`${pos[0]},${pos[1]}`, mtiles[name]);
   if (call_multiplayer) {
     multiplayer.tiles_add_callback(name, pos);
@@ -378,7 +379,7 @@ function update(dt) {
     Math.floor((state.mouse[1] - state.camera[1]) / state.scale / 16)
   ];
 
-  state.time = ((Date.now() - state.server_uptime_start) / (64 * 1000)) % Math.PI * 2;
+  state.time = ((Date.now() - state.server_uptime_start) / (64 * 1000)) % Math.PI * 2 + 1;
 
   keys(dt);
 

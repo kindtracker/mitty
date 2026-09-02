@@ -1,3 +1,4 @@
+const { perlin1D } = require('@leodeslf/perlin-noise');
 const { log } = require("./utils.js");
 
 const WebSocket = require("ws");
@@ -36,6 +37,50 @@ function broadcast(update_message) {
   }
 }
 
+function tiles_add(name, x, y) {
+  world.delete(`${x},${y}`);
+  world.set(`${x},${y}`, name);
+  broadcast({
+    type: "update",
+    tile: {
+      mode: "add",
+      pos: [x, y],
+      name
+    }
+  });
+}
+
+function tiles_remove(x, y) {
+  world.delete(`${x},${y}`);  
+  broadcast({
+    type: "update",
+    tile: {
+      mode: "remove",
+      pos: [x, y]
+    }
+  });
+}
+
+function chunk_generate(xs, ys, w, h) {
+  for (let y = ys; y < ys + h; y++) {
+    for (let x = xs; x < xs + w; x++) {
+      let name = "mitty:dirt";
+
+      const nx = x * 0.01
+      const noise1 = perlin1D(nx/1);
+      const noise2 = perlin1D(nx/2);
+      const surface = Math.floor(noise1*20 + noise2*10) + 10;
+      if (y < surface) continue;
+      if (y === surface) {
+        name = "mitty:grass";
+      } else if (y > surface + 4) {
+        name = "mitty:stone";
+      }
+      tiles_add(name, x, y);
+    }
+  }
+}
+
 server.on("connection", (socket) => {
   const client = {socket, ip: socket._socket.remoteAddress, player: player_new("unknown", -1)};
   clients.push(client);
@@ -69,16 +114,10 @@ server.on("connection", (socket) => {
         if (!("pos" in message.tile)) return;
         if (message.tile.mode == "add") {
           if (!("name" in message.tile)) return;
-          world.set(`${message.tile.pos[0]},${message.tile.pos[1]}`, message.tile.name);
+          tiles_add(message.tile.name, message.tile.pos[0], message.tile.pos[1]);
         } else if (message.tile.mode == "remove") {
           world.delete(`${message.tile.pos[0]},${message.tile.pos[1]}`);
-        }
-        
-        const update_message = JSON.stringify(message);
-        for (const oclient of clients) {
-          if (oclient.socket.readyState !== WebSocket.OPEN) continue;
-          if (oclient.player.id == -1) continue;
-          oclient.socket.send(update_message);
+          tiles_remove(message.tile.pos[0], message.tile.pos[1]);
         }
       }
     }
@@ -117,4 +156,18 @@ setInterval(() => {
   broadcast({ type: "update", players });
 }, 1000 / 32);
 
-log("game", "server listening: ws://localhost:8001");
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function main() {
+  log("game", "server listening: ws://localhost:8001");
+  for (let y = 0; y < 64; y += 8) {
+    for (let x = 0; x < 64; x += 8) {
+      chunk_generate(x, y+2, 8, 8);
+      await wait(300);
+    }
+  }
+};
+
+main();

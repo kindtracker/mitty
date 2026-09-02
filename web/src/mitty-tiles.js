@@ -3,6 +3,14 @@ window.mtiles = {
     pos: [3, 11],
     hardness: 0.1
   },
+  "mitty:dirt": {
+    pos: [9, 3],
+    hardness: 0.1
+  },
+  "mitty:stone": {
+    pos: [20, 14],
+    hardness: 0.1
+  },
   "mitty:breaking:1": {
     pos: [0, 8]
   },

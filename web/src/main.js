@@ -6,8 +6,6 @@
   const mitty_config = window.config;
   await engine.init(name);
   await multiplayer.init(mitty_config.game, name);
-  
-  engine.tiles_add("mitty:grass", [0, 2]);
 
   let last_time = null;
   let ml_last_time = null;

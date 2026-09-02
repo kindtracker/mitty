@@ -6,6 +6,7 @@
     "start": "node start.js"
   },
   "dependencies": {
+    "@leodeslf/perlin-noise": "^1.1.2",
     "ws": "^8.21.3"
   }
 }
