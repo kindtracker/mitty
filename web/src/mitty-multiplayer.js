@@ -6,7 +6,7 @@ function handler(message) {
     state.player.id = message.id;
     state.player.pid = message.pid;
     state.server_uptime_start = message.uptime_start;
-    state.world = new Map(message.world.map(([pos, name]) => [pos, mtiles[name]]));
+//    state.world = new Map(message.world.map(([pos, name]) => [pos, mtiles[name]]));
   } else if (message.type == "leave") {
     delete state.players[message.id];
   } else if (message.type == "time") {
@@ -28,6 +28,14 @@ function handler(message) {
       }
     }
   }
+}
+
+function chunk_request(x, y) {
+  socket.send(JSON.stringify({
+    type: "request",
+    chunk_pos: `${x},${y}`
+  }));
+  state.chunks.set(`${x},${y}`, true);
 }
 
 function tiles_add_callback(name, pos) {
@@ -88,6 +96,7 @@ async function init(url, session_token) {
 const multiplayer = {};
 multiplayer.init = init;
 multiplayer.update = update;
+multiplayer.chunk_request = chunk_request;
 multiplayer.tiles_add_callback = tiles_add_callback;
 multiplayer.tiles_remove_callback = tiles_remove_callback;
 window.multiplayer = multiplayer;

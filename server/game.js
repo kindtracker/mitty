@@ -8,6 +8,7 @@ const server = new WebSocket.Server({
 });
 
 const world = new Map();
+const seed = Math.random() * 10_000_000;
 const clients = [];
 
 let current_id = 0;
@@ -19,7 +20,8 @@ function player_new(name, id) {
     name,
     id,
     pid: Date.now().toString(16),
-    speed: 7.5,
+    speedwalk: 7.5,
+    jump_power: 13,
     pos: [0, 0],
     vpos: [0, 0],
     on_ground: true,
@@ -37,28 +39,44 @@ function broadcast(update_message) {
   }
 }
 
-function tiles_add(name, x, y) {
+function tiles_add(name, x, y, broadcastp = true, socket = null) {
   world.delete(`${x},${y}`);
   world.set(`${x},${y}`, name);
-  broadcast({
+  const update_message = {
     type: "update",
     tile: {
       mode: "add",
       pos: [x, y],
       name
     }
-  });
+  };
+
+  if (broadcastp) {
+    broadcast(update_message);
+  } else if (socket) {
+    socket.send(JSON.stringify(update_message));
+  }
 }
 
-function tiles_remove(x, y) {
+function tiles_remove(x, y, broadcastp = true, socket = null) {
   world.delete(`${x},${y}`);  
-  broadcast({
+  const update_message = {
     type: "update",
     tile: {
       mode: "remove",
       pos: [x, y]
     }
-  });
+  };
+
+  if (broadcastp) {
+    broadcast(update_message);
+  } else if (socket) {
+    socket.send(JSON.stringify(update_message));
+  }
+}
+
+function tiles_get(x, y) {
+  return world.get(`${x},${y}`);
 }
 
 function chunk_generate(xs, ys, w, h) {
@@ -66,7 +84,7 @@ function chunk_generate(xs, ys, w, h) {
     for (let x = xs; x < xs + w; x++) {
       let name = "mitty:dirt";
 
-      const nx = x * 0.01
+      const nx = x * 0.01;
       const noise1 = perlin1D(nx/1);
       const noise2 = perlin1D(nx/2);
       const surface = Math.floor(noise1*20 + noise2*10) + 10;
@@ -76,7 +94,7 @@ function chunk_generate(xs, ys, w, h) {
       } else if (y > surface + 4) {
         name = "mitty:stone";
       }
-      tiles_add(name, x, y);
+      tiles_add(name, x, y, false);
     }
   }
 }
@@ -114,10 +132,19 @@ server.on("connection", (socket) => {
         if (!("pos" in message.tile)) return;
         if (message.tile.mode == "add") {
           if (!("name" in message.tile)) return;
-          tiles_add(message.tile.name, message.tile.pos[0], message.tile.pos[1]);
+          tiles_add(message.tile.name, message.tile.pos[0], message.tile.pos[1], true);
         } else if (message.tile.mode == "remove") {
           world.delete(`${message.tile.pos[0]},${message.tile.pos[1]}`);
-          tiles_remove(message.tile.pos[0], message.tile.pos[1]);
+          tiles_remove(message.tile.pos[0], message.tile.pos[1], true);
+        }
+      }
+    } else if (type == "request") {
+      if ("chunk_pos" in message) {
+        const cpos = message.chunk_pos.split(",").map(Number);
+        for (let y = cpos[1]; y < cpos[1] + 8; y++) {
+          for (let x = cpos[0]; x < cpos[0] + 8; x++) {
+            tiles_add(tiles_get(x, y), x, y, false, socket);
+          }
         }
       }
     }

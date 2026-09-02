@@ -17,6 +17,7 @@ let state = {
   breaking_pos: null,
   scale: 4,
   world: null,
+  chunks: null,
   multiplayer: null,
   server_uptime_start: Date.now()
 };
@@ -111,6 +112,7 @@ async function init(player_name) {
   console.log("[mitty] loading: state");
   state.player = player_new(player_name, 1);
   state.world = new Map();
+  state.chunks = new Map();
 
   console.log("[mitty] loading: textures");
   for (const [key, value] of Object.entries(all_textures)) {
@@ -125,7 +127,7 @@ function player_new(name, id) {
     id,
     pid: Date.now().toString(16),
     speedwalk: 7.5,
-    jump_power: 13,
+    jumppower: 12.8,
     pos: [0, 0],
     vpos: [0, 0],
     on_ground: true,
@@ -155,7 +157,7 @@ function background() {
   if (night > 0) {
     ctx.fillStyle = `rgba(255, 255, 255, ${night * 0.8})`;
     for (let i = 0; i < 160; i++) {
-      const x = (Math.sin(Date.now()/512000+i/1)+1)/2 * state.width;
+      const x = (Math.sin(Date.now()/512000+i*i)+1)/2 * state.width;
       const y = ((i + state.time*2) * 71.3) % (state.height * 0.8);
       const size = 0.5 + ((i * 17) % 10) / 10;
 
@@ -212,6 +214,22 @@ function tiles() {
       const tile = state.world.get(`${x},${y}`);
       if (!tile) continue;
       ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, x*16, y*16, 16, 16);
+    }
+  }
+}
+
+function chunks_request() {
+  const start_x = Math.floor((-state.camera[0]) / (16 * state.scale)) - 1;
+  const start_y = Math.floor((-state.camera[1]) / (16 * state.scale)) - 1;
+  const end_x = Math.ceil((state.width - state.camera[0]) / (16 * state.scale)) + 1;
+  const end_y = Math.ceil((state.height - state.camera[1]) / (16 * state.scale)) + 1;
+
+  for (let y = start_y; y < end_y; y += 8) {
+    for (let x = start_x; x < end_x; x += 8) {
+      const has_chunk = state.chunks.get(`${x},${y}`);
+      console.log(has_chunk)
+      if (has_chunk) continue;
+      multiplayer.chunk_request(x, y);
     }
   }
 }
@@ -292,7 +310,7 @@ function keys(dt) {
     state.player.pos[0] += state.player.speedwalk * dt;
   }
   if ((state.keys["Space"] || state.keys["KeyW"]) == true && state.player.on_ground) {
-    state.player.vpos[1] = -state.player.jump_power;
+    state.player.vpos[1] = -state.player.jumppower;
   }
   if (moving) {
     state.player.animation = (performance.now() / 150) % 7;
@@ -395,6 +413,7 @@ function update(dt) {
   for (const player of all_players) {
     player_update(dt, player);
   }
+  chunks_request();
 
   mouse_buttons(dt);
 }
