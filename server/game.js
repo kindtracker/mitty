@@ -8,6 +8,7 @@ const server = new WebSocket.Server({
 });
 
 const world = new Map();
+const generated_chunks = new Map();
 const seed = Math.random() * 10_000_000;
 const clients = [];
 
@@ -97,6 +98,7 @@ function chunk_generate(xs, ys, w, h) {
       tiles_add(name, x, y, false);
     }
   }
+  generated_chunks.set(`${xs},${ys}`, true);
 }
 
 server.on("connection", (socket) => {
@@ -141,6 +143,9 @@ server.on("connection", (socket) => {
     } else if (type == "request") {
       if ("chunk_pos" in message) {
         const cpos = message.chunk_pos.split(",").map(Number);
+        if (!generated_chunks.get(`${cpos[0]},${cpos[1]}`)) {
+          chunk_generate(cpos[0], cpos[1], 8, 8);
+        }
         for (let y = cpos[1]; y < cpos[1] + 8; y++) {
           for (let x = cpos[0]; x < cpos[0] + 8; x++) {
             tiles_add(tiles_get(x, y), x, y, false, socket);
@@ -189,11 +194,6 @@ function wait(ms) {
 
 async function main() {
   log("game", "server listening: ws://localhost:8001");
-  for (let y = 0; y < 16; y += 8) {
-    for (let x = 0; x < 64; x += 8) {
-      chunk_generate(x, y+2, 8, 8);
-    }
-  }
 };
 
 main();
