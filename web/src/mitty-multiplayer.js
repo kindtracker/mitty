@@ -6,7 +6,6 @@ function handler(message) {
     state.player.id = message.id;
     state.player.pid = message.pid;
     state.server_uptime_start = message.uptime_start;
-//    state.world = new Map(message.world.map(([pos, name]) => [pos, mtiles[name]]));
   } else if (message.type == "leave") {
     delete state.players[message.id];
   } else if (message.type == "time") {

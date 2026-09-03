@@ -16,6 +16,10 @@ let current_id = 0;
 
 let uptime_start = Date.now();
 
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function player_new(name, id) {
   return {
     name,
@@ -107,7 +111,7 @@ server.on("connection", (socket) => {
 
   log("game", `${client.ip}: client connected`);
 
-  socket.on("message", (data) => {
+  socket.on("message", async (data) => {
     const message = JSON.parse(data.toString());
     if (!("type" in message)) return;
     const type = message.type;
@@ -123,8 +127,7 @@ server.on("connection", (socket) => {
         name: message.session_token,
         id: client.player.id,
         pid: client.player.pid,
-        uptime_start,
-        world: [...world]
+        uptime_start
       }));
     } else if (type == "update") {
       if ("player" in message) {
@@ -136,7 +139,6 @@ server.on("connection", (socket) => {
           if (!("name" in message.tile)) return;
           tiles_add(message.tile.name, message.tile.pos[0], message.tile.pos[1], true);
         } else if (message.tile.mode == "remove") {
-          world.delete(`${message.tile.pos[0]},${message.tile.pos[1]}`);
           tiles_remove(message.tile.pos[0], message.tile.pos[1], true);
         }
       }
@@ -187,10 +189,6 @@ setInterval(() => {
 
   broadcast({ type: "update", players });
 }, 1000 / 32);
-
-function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 async function main() {
   log("game", "server listening: ws://localhost:8001");

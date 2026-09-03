@@ -219,10 +219,10 @@ function tiles() {
 }
 
 function chunks_request() {
-  const start_x = Math.floor((-state.camera[0]) / (16 * state.scale)) - 1;
-  const start_y = Math.floor((-state.camera[1]) / (16 * state.scale)) - 1;
-  const end_x = Math.ceil((state.width - state.camera[0]) / (16 * state.scale)) + 1;
-  const end_y = Math.ceil((state.height - state.camera[1]) / (16 * state.scale)) + 1;
+  const start_x = Math.floor((Math.floor((-state.camera[0]) / (16 * state.scale)) - 1) / 8) * 8;
+  const start_y = Math.floor((Math.floor((-state.camera[1]) / (16 * state.scale)) - 1) / 8) * 8;
+  const end_x = Math.ceil((Math.ceil((state.width - state.camera[0]) / (16 * state.scale)) + 1) / 8) * 8;
+  const end_y = Math.ceil((Math.ceil((state.height - state.camera[1]) / (16 * state.scale)) + 1) / 8) * 8;
 
   for (let y = start_y; y < end_y; y += 8) {
     for (let x = start_x; x < end_x; x += 8) {
