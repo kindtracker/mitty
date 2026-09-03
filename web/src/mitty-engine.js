@@ -128,6 +128,7 @@ function player_new(name, id) {
     pid: Date.now().toString(16),
     speedwalk: 7.5,
     jumppower: 12.8,
+    accel: 7.5/4,
     pos: [0, 0],
     vpos: [0, 0],
     on_ground: true,
@@ -302,12 +303,16 @@ function keys(dt) {
   }
   if (state.keys["KeyA"] == true) {
     state.player.face = -1;
-    state.player.pos[0] -= state.player.speedwalk * dt;
+    state.player.vpos[0] -= state.player.accel;
   } 
   if (state.keys["KeyD"] == true) {
     state.player.face = 1;
-    state.player.pos[0] += state.player.speedwalk * dt;
+    state.player.vpos[0] += state.player.accel;
   }
+  if (moving == false) {
+    state.player.vpos[0] = 0;
+  }
+  state.player.vpos[0] = Math.max(-state.player.speedwalk, Math.min(state.player.vpos[0], state.player.speedwalk))
   if ((state.keys["Space"] || state.keys["KeyW"]) == true && state.player.on_ground) {
     state.player.vpos[1] = -state.player.jumppower;
   }
