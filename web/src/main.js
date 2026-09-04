@@ -24,7 +24,7 @@
       multiplayer.update();
       ml_last_time = now;
     }
-    if (dt < 1) {
+    if (dt < 1/2) {
       engine.update(dt);
       engine.render(dt);
     }

@@ -3,10 +3,14 @@
   "author": "kindtracker (https://github.com/kindtracker/)",
   "version": "0.1.0",
   "scripts": {
-    "start": "node start.js"
+    "start": "node start.js",
+    "dev": "npx nodemon start.js"
   },
   "dependencies": {
     "@leodeslf/perlin-noise": "^1.1.2",
     "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

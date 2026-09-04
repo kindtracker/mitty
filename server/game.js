@@ -89,10 +89,14 @@ function chunk_generate(xs, ys, w, h) {
     for (let x = xs; x < xs + w; x++) {
       let name = "mitty:dirt";
 
-      const nx = x * 0.01;
+      const nx = x * 0.01 + 50;
+      const noise0 = Math.abs(perlin1D(nx/32));
       const noise1 = perlin1D(nx/1);
       const noise2 = perlin1D(nx/2);
-      const surface = Math.floor(noise1*20 + noise2*10) + 10;
+      const noise3 = Math.sqrt(Math.abs(perlin1D(nx/16))*(noise0 * 10));
+      const noise4 = perlin1D(nx*noise3);
+      const noise5 = noise0*64;
+      const surface = Math.floor(noise1*20 + noise2*10 + noise4*3 + noise5) + 10;
       if (y < surface) continue;
       if (y === surface) {
         name = "mitty:grass";
