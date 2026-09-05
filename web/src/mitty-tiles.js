@@ -11,6 +11,14 @@ window.mtiles = {
     pos: [20, 14],
     hardness: 0.1
   },
+  "mitty:oak/log": {
+    pos: [7, 14],
+    hardness: 0.1
+  },
+  "mitty:oak/leaves": {
+    pos: [9, 13],
+    hardness: 0.1
+  },
   "mitty:breaking:1": {
     pos: [0, 8]
   },
@@ -32,4 +40,8 @@ window.mtiles = {
   "mitty:breaking:7": {
     pos: [6, 8]
   }
+}
+
+for (let [k, v] of Object.entries(window.mtiles)) {
+  v.name = k;
 }

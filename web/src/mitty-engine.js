@@ -62,7 +62,7 @@ function onmouse(e) {
     if (tiles_get(state.mouse_world)) {
       state.breaking_pos = state.mouse_world;
     } else {
-      tiles_add("mitty:grass", state.mouse_world);
+      tiles_add("mitty:oak/leaves", state.mouse_world);
       state.breaking_pos = null;
     }
   } else if (e.type == "contextmenu") {
@@ -215,6 +215,12 @@ function tiles() {
       const tile = state.world.get(`${x},${y}`);
       if (!tile) continue;
       ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, x*16, y*16, 16, 16);
+      if (tile.name == "mitty:oak/leaves") {
+        ctx.save();
+        ctx.filter = "sepia(1) brightness(0.86) saturate(56) hue-rotate(64deg)";
+        ctx.drawImage(state.assets.tileset, tile.pos[0]*16, tile.pos[1]*16, 16, 16, x*16, y*16, 16, 16);
+        ctx.restore();
+      }
     }
   }
 }
