@@ -7,7 +7,8 @@
     "dev": "npx nodemon --watch server start.js"
   },
   "dependencies": {
-    "@leodeslf/perlin-noise": "^1.1.2",
+    "alea": "^1.0.1",
+    "simplex-noise": "^4.0.3",
     "ws": "^8.21.3"
   },
   "devDependencies": {

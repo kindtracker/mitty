@@ -1,4 +1,5 @@
-const { perlin1D } = require('@leodeslf/perlin-noise');
+const { createNoise2D } = require("simplex-noise");
+const alea = require("alea");
 const { log } = require("./utils.js");
 
 const WebSocket = require("ws");
@@ -9,7 +10,8 @@ const server = new WebSocket.Server({
 
 const world = new Map();
 const generated_chunks = new Map();
-const seed = Math.random() * 10_000_000;
+const seed = Math.floor(Math.random() * 10_000_000);
+const noise = createNoise2D(alea(seed));
 const clients = [];
 
 let current_id = 0;
@@ -102,18 +104,22 @@ function tree_generate(x, y) {
   tiles_add("mitty:oak/leaves", x, y-height-1, true);
 }
 
+function noise_pos(x, y = 0) {
+  return noise(x, y);
+}
+
 function chunk_generate(xs, ys, w, h) {
   for (let y = ys; y < ys + h; y++) {
     for (let x = xs; x < xs + w; x++) {
       let name = "mitty:dirt";
 
-      const nx = x * 0.01 + 50;
-      const noise0 = Math.abs(perlin1D(nx/32));
-      const noise1 = perlin1D(nx/1);
-      const noise2 = perlin1D(nx/2);
-      const noise3 = Math.sqrt(Math.abs(perlin1D(nx/16))*(noise0 * 10));
-      const noise4 = perlin1D(nx*noise3);
-      const noise5 = noise0*64;
+      const nx = x * 0.01;
+      const noise0 = Math.abs(noise_pos(nx/512));
+      const noise1 = noise_pos(nx/1);
+      const noise2 = noise_pos(nx/2);
+      const noise3 = Math.sqrt(Math.abs(noise_pos(nx/128))*(noise0 * 10));
+      const noise4 = noise_pos(nx*noise3);
+      const noise5 = noise0;
       const surface = Math.floor(noise1*20 + noise2*10 + noise4*3 + noise5) + 10;
       if (y < surface) continue;
       if (y == surface) {

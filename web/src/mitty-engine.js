@@ -19,7 +19,7 @@ let state = {
   world: null,
   chunks: null,
   multiplayer: null,
-  debug: true,
+  debug: false,
   server_uptime_start: Date.now()
 };
 
@@ -127,8 +127,8 @@ function player_new(name, id) {
     name,
     id,
     pid: Date.now().toString(16),
-    speedwalk: 7.5,
-    jumppower: 12.8,
+    speedwalk: 7.5*5,
+    jumppower: 14,
     accel: 7.5/4,
     pos: [0, 0],
     vpos: [0, 0],
