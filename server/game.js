@@ -84,18 +84,22 @@ function tiles_get(x, y) {
   return world.get(`${x},${y}`);
 }
 
+function get_prandom(x, t) {
+  return Math.abs(Math.sin(x * 12.9898 * t)) % 1
+}
+
 function tree_generate(x, y) {
-  const height = 4 + Math.floor(Math.random() * 3);
+  const height = 3 + Math.floor(get_prandom(x, 2) * 2);
   for (let i = 1; i <= height; i++) {
-    tiles_add("mitty:oak/log", x, y - i, false);
+    tiles_add("mitty:oak/log", x, y - i, true);
   }
   for (let dy = -2; dy <= 0; dy++) {
     for (let dx = -2; dx <= 2; dx++) {
       if (Math.abs(dx) + Math.abs(dy) > 3) continue;
-      tiles_add("mitty:oak/leaves", x + dx, y + dy - height, false);
+      tiles_add("mitty:oak/leaves", x+dx, y+dy-height, true);
     }
   }
-  tiles_add("mitty:oak/leaves", x, y - height - 1, false);
+  tiles_add("mitty:oak/leaves", x, y-height-1, true);
 }
 
 function chunk_generate(xs, ys, w, h) {
@@ -115,7 +119,7 @@ function chunk_generate(xs, ys, w, h) {
       if (y == surface) {
         name = "mitty:grass";
         
-        if (Math.abs(Math.sin(x * 12.9898)) % 1 < 0.08) {
+        if (get_prandom(x, 1) < 0.08) {
           tree_generate(x, y);
         }
       } else if (y > surface + 4) {
