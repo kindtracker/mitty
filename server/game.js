@@ -115,12 +115,12 @@ function chunk_generate(xs, ys, w, h) {
 
       const nx = x * 0.01;
       const noise0 = Math.abs(noise_pos(nx/512));
-      const noise1 = noise_pos(nx/1);
-      const noise2 = noise_pos(nx/2);
+      const noise1 = noise_pos(nx/2);
+      const noise2 = noise_pos(nx/4);
       const noise3 = Math.sqrt(Math.abs(noise_pos(nx/128))*(noise0 * 10));
       const noise4 = noise_pos(nx*noise3);
       const noise5 = noise0;
-      const surface = Math.floor(noise1*20 + noise2*10 + noise4*3 + noise5) + 10;
+      const surface = Math.floor(noise1*10 + noise2*5 + noise4*3 + noise5**3) + 10;
       if (y < surface) continue;
       if (y == surface) {
         name = "mitty:grass";
