@@ -85,11 +85,11 @@ function tiles_get(x, y) {
 }
 
 function get_prandom(x, t) {
-  return Math.abs(Math.sin(x * 12.9898 * t)) % 1
+  return (Math.abs(Math.sin(x * 12.9898 * t)) * 10) % 1
 }
 
 function tree_generate(x, y) {
-  const height = 3 + Math.floor(get_prandom(x, 2) * 2);
+  const height = 3 + Math.round(get_prandom(x, 2));
   for (let i = 1; i <= height; i++) {
     tiles_add("mitty:oak/log", x, y - i, true);
   }

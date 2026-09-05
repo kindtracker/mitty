@@ -13,11 +13,13 @@ window.mtiles = {
   },
   "mitty:oak/log": {
     pos: [7, 14],
-    hardness: 0.1
+    hardness: 0.1,
+    tl: true
   },
   "mitty:oak/leaves": {
     pos: [9, 13],
-    hardness: 0.1
+    hardness: 0.1,
+    tl: true
   },
   "mitty:breaking:1": {
     pos: [0, 8]

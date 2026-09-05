@@ -19,7 +19,7 @@ let state = {
   world: null,
   chunks: null,
   multiplayer: null,
-  debug: false,
+  debug: true,
   server_uptime_start: Date.now()
 };
 
@@ -348,6 +348,9 @@ function keys(dt) {
     state.player.face = 1;
     state.player.vpos[0] += state.player.accel;
   }
+  if (state.keys["KeyS"] == true) {
+    state.player.vpos[1] = 50;
+  }
   if (moving == false) {
     state.player.vpos[0] = 0;
   }
@@ -364,7 +367,7 @@ function keys(dt) {
 
 function player_collide(player, tile) {
   const pos = player.pos;
-  const size = [1, 18 / 16];
+  const size = [1, 1];
 
   return (
     pos[0] < tile[0] + 1 &&
@@ -380,6 +383,7 @@ function player_add(player) {
 
 function player_update(dt, player) {
   const gravity = 0.7;
+  const previous_y = player.pos[1];
 
   player.vpos[1] += gravity;
 
@@ -400,6 +404,17 @@ function player_update(dt, player) {
       if (!tile) continue;
       if (!player_collide(player, [x, y])) continue;
 
+      const was_above = previous_y + 1 <= y;
+      const is_falling = player.vpos[1] > 0;
+
+      if (tile.tl) {
+        if (!was_above || !is_falling) continue;
+        player.pos[1] = y - 1;
+        player.vpos[1] = 0;
+        player.on_ground = true;
+        continue;
+      }
+
       const overlap_left = (player.pos[0] + 1) - x;
       const overlap_right = (x + 1) - player.pos[0];
       const overlap_top = (player.pos[1] + 1) - y;
@@ -407,14 +422,14 @@ function player_update(dt, player) {
 
       const min_overlap = Math.min(overlap_left, overlap_right, overlap_top, overlap_bottom);
 
-      if (min_overlap === overlap_bottom) {
+      if (min_overlap == overlap_bottom) {
         player.pos[1] = y + 1;
         player.vpos[1] = 0;
-      } else if (min_overlap === overlap_top) {
-        player.pos[1] = y - 18 / 16;
+      } else if (min_overlap == overlap_top) {
+        player.pos[1] = y - 1;
         player.vpos[1] = 0;
         player.on_ground = true;
-      } else if (min_overlap === overlap_right) {
+      } else if (min_overlap == overlap_right) {
         player.pos[0] = x + 1;
         player.vpos[0] = 0;
       } else {
