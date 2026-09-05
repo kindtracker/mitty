@@ -19,7 +19,14 @@ window.mtiles = {
   "mitty:oak/leaves": {
     pos: [9, 13],
     hardness: 0.1,
-    tl: true
+    tl: true,
+    filter: "sepia(1) brightness(0.86) saturate(56) hue-rotate(64deg)"
+  },
+  "mitty:short_grass": {
+    pos: [21, 14],
+    hardness: 0.1,
+    nt: true,
+    filter: "sepia(1) brightness(0.5) saturate(8) hue-rotate(64deg)"
   },
   "mitty:breaking:1": {
     pos: [0, 8]

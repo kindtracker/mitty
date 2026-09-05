@@ -121,7 +121,15 @@ function chunk_generate(xs, ys, w, h) {
       const noise4 = noise_pos(nx*noise3);
       const noise5 = noise0;
       const surface = Math.floor(noise1*10 + noise2*5 + noise4*3 + noise5**3) + 10;
-      if (y < surface) continue;
+      
+      if (y < surface-1) continue;
+      if (y < surface) {
+        if (get_prandom(x, 3) < 0.2) {
+          name = "mitty:short_grass";
+        } else {
+          continue;
+        }
+      }
       if (y == surface) {
         name = "mitty:grass";
         
