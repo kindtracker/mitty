@@ -19,6 +19,7 @@ let state = {
   world: null,
   chunks: null,
   multiplayer: null,
+  debug: false,
   server_uptime_start: Date.now()
 };
 
@@ -283,6 +284,35 @@ function selec() {
   }
 }
 
+function debug() {
+  const chunk_px = 8*16;
+  const start_x = Math.floor(-state.camera[0] / (chunk_px * state.scale)) - 1;
+  const start_y = Math.floor(-state.camera[1] / (chunk_px * state.scale)) - 1;
+  const end_x = Math.ceil((state.width - state.camera[0]) / (chunk_px * state.scale)) + 1;
+  const end_y = Math.ceil((state.height - state.camera[1]) / (chunk_px * state.scale)) + 1;
+
+  ctx.beginPath();
+  ctx.strokeStyle = "#00ff00";
+  ctx.lineWidth = state.scale/3;
+
+  for (let y = start_y; y < end_y; y++) {
+    for (let x = start_x; x < end_x; x++) {
+      const sx = x*chunk_px;
+      const sy = y*chunk_px;
+      const ex = sx+chunk_px;
+      const ey = sy+chunk_px;
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(sx, sy);
+      ctx.lineTo(ex, sy);
+      ctx.lineTo(ex, ey);
+      ctx.lineTo(sx, ey);
+      ctx.lineTo(sx, sy);
+    }
+  }
+
+  ctx.stroke();
+}
+
 function render() {
   background();
 
@@ -296,6 +326,9 @@ function render() {
     player_render(player);
   }
   selec();
+  if (state.debug) {
+    debug();
+  }
   ctx.restore();
 
   return 1;
