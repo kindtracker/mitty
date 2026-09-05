@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "start": "node start.js",
-    "dev": "npx nodemon start.js"
+    "dev": "npx nodemon --watch server start.js"
   },
   "dependencies": {
     "@leodeslf/perlin-noise": "^1.1.2",

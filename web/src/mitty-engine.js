@@ -369,7 +369,7 @@ function player_update(dt, player) {
 
       const overlap_left = (player.pos[0] + 1) - x;
       const overlap_right = (x + 1) - player.pos[0];
-      const overlap_top = (player.pos[1] + 18 / 16) - y;
+      const overlap_top = (player.pos[1] + 1) - y;
       const overlap_bottom = (y + 1) - player.pos[1];
 
       const min_overlap = Math.min(overlap_left, overlap_right, overlap_top, overlap_bottom);
